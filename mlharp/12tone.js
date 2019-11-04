@@ -40,9 +40,8 @@
     '#Eb3': 'Eb5'
   };
 
-  //$(noteId).on 'click', toggleNote noteName for noteId, noteName of notes
   $(window).on("load", function() {
-    var adsr, noteId, noteName, results, synth, tonejson;
+    var adsr, noteEnd, noteId, noteName, noteStart, synth, tonejson;
     synth = {};
     tonejson = {
       adsr: {
@@ -53,23 +52,33 @@
       }
     };
     adsr = new Tone.Envelope(tonejson.adsr);
-    results = [];
     for (noteId in notes) {
       noteName = notes[noteId];
       $(noteId).data('note', noteName);
-      $(noteId).mousedown(function(e) {
-        return synth[noteName].triggerAttack($(this).data('note'));
+      $(noteId).mousedown(function() {
+        return noteStart($(this).data('note'));
       });
-      $(noteId).mouseup(function(e) {
-        return synth[noteName].triggerRelease();
+      $(noteId).mouseup(function() {
+        return noteEnd($(this).data('note'));
+      });
+      $(noteId).on('touchstart', function() {
+        return noteStart($(this).data('note'));
+      });
+      $(noteId).on('touchend', function() {
+        return noteEnd($(this).data('note'));
       });
       $(noteId).css({
         cursor: 'pointer'
       });
       synth[noteName] = new Tone.Synth().toMaster();
-      results.push(adsr.connect(synth[noteName]));
+      adsr.connect(synth[noteName]);
     }
-    return results;
+    noteStart = function(noteName) {
+      return synth[noteName].triggerAttack(noteName);
+    };
+    return noteEnd = function(noteName) {
+      return synth[noteName].triggerRelease();
+    };
   });
 
 }).call(this);
