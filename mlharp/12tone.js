@@ -41,17 +41,16 @@
   };
 
   $(window).on("load", function() {
-    var adsr, noteEnd, noteId, noteName, noteStart, synth, tonejson;
+    var noteEnd, noteId, noteName, noteStart, synth, synthJSON;
     synth = {};
-    tonejson = {
-      adsr: {
+    synthJSON = {
+      envelope: {
         attack: 0.1,
         decay: 0.2,
         sustain: 1,
         release: 0.8
       }
     };
-    adsr = new Tone.Envelope(tonejson.adsr);
     for (noteId in notes) {
       noteName = notes[noteId];
       $(noteId).data('note', noteName);
@@ -70,8 +69,7 @@
       $(noteId).css({
         cursor: 'pointer'
       });
-      synth[noteName] = new Tone.Synth().toMaster();
-      adsr.connect(synth[noteName]);
+      synth[noteName] = new Tone.Synth(synthJSON).toMaster();
     }
     noteStart = function(noteName) {
       return synth[noteName].triggerAttack(noteName);
