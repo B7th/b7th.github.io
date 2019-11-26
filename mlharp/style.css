@@ -1,1 +1,13 @@
-undefined
+html {
+  background-color: #000;
+}
+body {
+  background: linear-gradient(top, #fff, #000);
+}
+#C_F {
+  stroke: #fff;
+  box-shadow: 0 0 3px #fff;
+}
+#Gb3 {
+  fill: #fff !important;
+}
