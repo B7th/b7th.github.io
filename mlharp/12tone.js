@@ -8,7 +8,7 @@
   // The first note (in general C) is 0o1, the Fifth is 0o2, the 2nd is 0o4, etc.
   // Playing notes together adds them, and it ends up showing that 0o23 will be major,
   // while 0o1003, or 0o31, will be minor
-  var chords, currentChord, key, keyboard2notes, note2oct, noteEnd, noteStart, notes, notesPlaying, oct2note, scales, star, svg2notes, synth, synthJSON, value;
+  var chordAnalyser, chords, currentChord, key, keyboard2notes, note2oct, noteEnd, noteStart, notes, notesPlaying, oct2note, scales, svg2notes, synth, synthJSON, value;
 
   note2oct = {
     "C": 0o0001,
@@ -43,108 +43,96 @@
   scales = {};
 
   chords = {
-    // 0 note
     0o0000: "silence/noise/potato",
-    
-    // 1 note (0001)
+    // 1 note span (unison)
     0o0001: " (unison)",
-    
-    // 5th
+    // 2 Note span (maj fifth)
     0o0003: "5",
-    0o0007: "sus2no5", // 2nd
-    0o0017: "69no3",
-    0o0027: "majadd2",
-    0o0047: "maj9sus2",
-    0o0107: "sus2add#4",
-    0o0207: "",
-    0o0407: "",
-    0o1007: "minadd2",
-    0o2007: "",
-    0o3007: "",
-    0o0013: "6sus", // 6th
-    0o0033: "6",
-    0o0053: "",
-    0o0113: "",
-    0o0213: "",
-    0o0413: "",
-    0o1013: "m6",
-    0o2013: "",
-    0o0023: "maj", // 3rd
-    0o0063: "M7",
-    0o0123: "",
-    0o0223: "",
-    0o0423: "",
-    0o1023: "",
-    0o2023: "7",
-    0o0043: "M7sus", // M7th
-    0o0143: "",
-    0o0243: "",
-    0o0443: "",
-    0o1043: "",
-    0o2043: "",
-    0o0103: "sus(#4)", // b7th
-    0o0303: "",
-    0o0503: "",
-    0o1103: "",
-    0o2103: "",
-    0o0203: "sus(b2)", // b2nd
-    0o0065: "",
-    0o0125: "",
-    0o0225: "",
-    0o0425: "",
-    0o1025: "",
-    0o2025: "",
-    0o0403: "5addb6?", // b6th
-    0o1003: "min", // b3rd
-    0o2003: "7sus", // b7th
     
-    // 2nd
+    // 3 note span (maj 2nd)
     0o0005: "2nd",
-    0o0025: "add2no5", // 3rd
-    0o0065: "",
-    0o0125: "",
-    0o0225: "",
-    0o0425: "",
-    0o1025: "",
-    0o0045: "M7add2no3no5?", // 7th
-    0o0145: "",
-    0o0245: "",
-    0o0445: "",
-    0o1045: "",
-    0o0105: "9b5no7?", // b5th
-    0o0305: "",
-    0o0505: "",
-    0o1105: "",
-    0o0205: "sus2addb2no5?", // b2nd
-    0o0205: "",
-    0o0205: "",
-    0o0405: "9#5no3no7?", // b6th
-    0o1405: "",
-    0o1005: "minadd2no5?", // b3rd
-    0o1405: "",
-    
-    // 6th
+    0o0007: "sus2",
+    // 4 note span (maj 6th)
     0o0011: "6th",
-    0o0111: "dimrev",
-    0o0311: "",
-    0o0511: "",
-    0o1111: "dim7",
-    0o2111: "",
-    0o0211: "6susb2no5?",
-    0o0611: "",
-    0o1211: "",
-    0o2211: "",
-    0o0411: "6#5sus",
-    0o1411: "",
-    0o2411: "",
-    
-    // 3rd
+    0o0013: "6sus",
+    0o0017: "69no3",
+    // 5 Note span (maj 3rd)
     0o0021: "maj3rd",
-    0o0421: "aug",
-    // Maj7th
+    0o0023: "maj",
+    0o0025: "add2no5",
+    0o0027: "majadd2",
+    0o0033: "6",
+    // 6 Note span (maj 7th)
     0o0041: "min2nd",
-    // Min5th
-    0o0101: "min5th"
+    0o0043: "maj7sus",
+    0o0045: "maj7add2no3no5?",
+    0o0047: "maj9sus2",
+    0o0053: "", // different key
+    0o0063: "maj7",
+    0o0065: "",
+    // 7 Note span (min 5th)
+    0o0101: "min5th",
+    0o0103: "sus(#4)",
+    0o0105: "9b5no7?",
+    0o0107: "sus2add#4",
+    0o0113: "",
+    0o0123: "majadd#4",
+    0o0125: "9b5",
+    0o0145: "",
+    0o0203: "sus(b2)",
+    0o0205: "",
+    0o0205: "sus2addb2no5?",
+    0o0207: "",
+    0o0211: "6susb2no5?",
+    0o0213: "",
+    0o0223: "majaddb2",
+    0o0225: "",
+    0o0243: "maj7susb9",
+    0o0245: "",
+    0o0303: "",
+    0o0305: "",
+    0o0311: "",
+    0o0403: "5addb6?",
+    0o0405: "9#5no3no7?",
+    0o0407: "",
+    0o0411: "6#5sus",
+    0o0413: "",
+    0o0421: "aug",
+    0o0423: "majb6",
+    0o0425: "",
+    0o0443: "",
+    0o0445: "13/?",
+    0o0503: "",
+    0o0511: "",
+    0o0611: "",
+    0o1003: "min",
+    0o1005: "minadd2no5?",
+    0o1007: "minadd2",
+    0o1011: "dim",
+    0o1013: "m6",
+    0o1023: "majaddb3",
+    0o1025: "",
+    0o1043: "",
+    0o1045: "",
+    0o1103: "",
+    0o1105: "",
+    0o1111: "dim7",
+    0o1211: "",
+    0o1405: "",
+    0o1405: "",
+    0o1411: "",
+    0o2003: "7sus",
+    0o2007: "9sus2",
+    0o2013: "13sus",
+    0o2023: "7",
+    0o2025: "",
+    0o2043: "",
+    0o2103: "",
+    0o2111: "",
+    0o2121: "7b5",
+    0o2211: "",
+    0o2411: "",
+    0o4061: "maj11no5"
   };
 
   notesPlaying = {};
@@ -155,7 +143,7 @@
 
   keyboard2notes = [65, 83, 68, 70, 71, 72, 74, 75, 76, 59, 222, 13, 81, 87, 69, 82, 84, 89, 85, 73, 79, 80, 219, 221, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 173, 61];
 
-  star = function() {
+  chordAnalyser = function() {
     var base, chord2, downChord, i, j, len, octalChord, results, text, value2;
     chord2 = [];
     octalChord = 0o0;
@@ -201,13 +189,18 @@
       stroke: '#b2b2b2'
     });
     $('#notes').children().css({
-      fill: '#b2b2b2'
+      fill: '#b2b2b2',
+      "fill-opacity": ".1"
+    });
+    $('#cords').children().css({
+      "stroke-opacity": '.1'
     });
     results = [];
     for (j = 0, len = chord2.length; j < len; j++) {
       value = chord2[j];
       $('#' + value).css({
-        fill: '#fff'
+        fill: '#fff',
+        "fill-opacity": ".9"
       });
       results.push((function() {
         var k, len1, results1;
@@ -215,7 +208,8 @@
         for (k = 0, len1 = chord2.length; k < len1; k++) {
           value2 = chord2[k];
           results1.push($('#' + value + '_' + value2).remove().appendTo('#cords').css({
-            stroke: '#fff'
+            stroke: '#fff',
+            "stroke-opacity": '.9'
           }));
         }
         return results1;
@@ -245,33 +239,29 @@
   synth = new Tone.PolySynth(12, Tone.DuoSynth, synthJSON).toMaster();
 
   noteStart = function(note) {
-    var id;
     if (note === -1 || notesPlaying[note] || (note == null)) {
       return;
     }
     notesPlaying[note] = true; //prevents repeat
-    id = svg2notes[notes.indexOf(note)];
-    synth.triggerAttack(note);
-    currentChord[note.slice(0, -1)] = true;
-    star();
-    return $(id).css({
+    $(svg2notes[notes.indexOf(note)]).css({
       fill: '#fff'
     });
+    synth.triggerAttack(note);
+    currentChord[note.slice(0, -1)] = true;
+    return chordAnalyser();
   };
 
   noteEnd = function(note) {
-    var id;
     if (note === -1 || (note == null)) {
       return;
     }
     notesPlaying[note] = false;
-    id = svg2notes[notes.indexOf(note)];
+    $(svg2notes[notes.indexOf(note)]).css({
+      fill: $(svg2notes[notes.indexOf(note)]).data('color')
+    });
     synth.triggerRelease(note);
     currentChord[note.slice(0, -1)] = false;
-    star();
-    return $(id).css({
-      fill: $(id).data('color')
-    });
+    return chordAnalyser();
   };
 
   // Teaching
