@@ -1,5 +1,5 @@
 (function() {
-  var SVG, cX, cY, canvas, colors, ctx, currentChord, drag, drawTone, drawTones, e, freqs, gradient, h, keyboard, midfq, n, nearestValue, noteEnd, noteStart, order, orders, playedNotes, points, r, r2, r3, radius, shepard, synth, synthJSON, texts, texts2, tones, totalArc, updateOrder;
+  var SVG, cX, cY, canvas, colors, ctx, currentChord, drag, drawTone, drawTones, e, findCoprimes, freqs, gradient, harmonics, k, keyboard, midfq, nearestValue, noteEnd, noteNames, noteStart, order, orders, playedNotes, points, primes, r, r2, r3, radius, shepard, synth, synthJSON, texts, texts2, tones, totalArc, updateOrder, v;
 
   midfq = 110;
 
@@ -15,9 +15,102 @@
     return Math.pow(2, e12 / ebase);
   };
 
-  h = [81 / 64, 177147 / 131072, 11 / 8, 27 / 16, 243 / 128, 25 / 24, 9 / 8, 6 / 5, 5 / 4, 4 / 3, 45 / 32, 3 / 2, 8 / 5, 5 / 3, 9 / 5, 15 / 8, e(1), e(2), e(3), e(4), e(5), e(6), e(8), e(9), e(10), e(11), e(7), 1];
+  harmonics = {
+    "u": 1,
+    "𝄫2₂": 33 / 32,
+    "𝄫2₃": 28 / 27,
+    "♭2₅": 21 / 20,
+    "♭2₇": 15 / 14,
+    "𝄫2₁₃": 40 / 39,
+    "♭2": e(1),
+    "♭2₂": 17 / 16,
+    "♭2₃": 25 / 24,
+    "♭2₅": 16 / 15,
+    "2₇": 16 / 14,
+    "♭2₁₁": 12 / 11,
+    "♭2₁₃": 14 / 13,
+    "2": e(2),
+    "2₂": 18 / 16,
+    "2₃": 10 / 9,
+    "2₅": 11 / 10,
+    "♭3₇": 17 / 14,
+    "♭3₁₁": 13 / 11,
+    "2₁₃": 15 / 13,
+    "♭3": e(3),
+    "♭3₂": 19 / 16,
+    "♭3₃": 7 / 6,
+    "♭3₅": 12 / 10,
+    "♯3₇": 18 / 14,
+    "3₁₁": 14 / 11,
+    "3₁₃": 16 / 13,
+    "3": e(4),
+    "3₂": 20 / 16,
+    "♯3₂": 81 / 64,
+    "3₃": 11 / 9,
+    "♯3₅": 13 / 10,
+    "4₇": 19 / 14,
+    "4₁₁": 15 / 11,
+    "4": e(5),
+    "4₂": 22 / 16,
+    "4₃": 4 / 3,
+    "3₅": 13 / 10,
+    "♭5₇": 20 / 14,
+    "4₁₃": 17 / 13,
+    "π4": 177147 / 131072,
+    "♭5": e(6),
+    "♭5₂": 23 / 16,
+    "𝄫5₂": 45 / 32,
+    "♯4₅": 14 / 10,
+    "5₇": 21 / 14,
+    "♭5₁₁": 16 / 11,
+    "♯4₁₃": 18 / 13,
+    "5": e(7),
+    "5₂": 24 / 16,
+    "5₅": 22 / 15,
+    "♭6₇": 22 / 14,
+    "♯5₁₁": 17 / 11,
+    "5₁₃": 19 / 13,
+    "♭6": e(8),
+    "♭6₂": 26 / 16,
+    "♭6₃": 14 / 9,
+    "♭6₅": 16 / 10,
+    "6₇": 23 / 14,
+    "6₁₁": 18 / 11,
+    "♯5₁₃": 20 / 13,
+    "6": e(9),
+    "6₂": 27 / 16,
+    "6₃": 5 / 3,
+    "6₅": 17 / 10,
+    "♯6₇": 24 / 14,
+    "♭7₁₁": 18 / 11,
+    "6₁₃": 22 / 13,
+    "♯6₁₃": 23 / 13,
+    "♭7": e(10),
+    "♯6₂": 28 / 16,
+    "♭7₂": 29 / 16,
+    "♭7₃": 16 / 9,
+    "♭7₅": 18 / 10,
+    "♭7₇": 25 / 14,
+    "7₁₁": 20 / 11,
+    "7₁₃": 24 / 13,
+    "7": e(11),
+    "7₂": 30 / 16,
+    "7₃": 11 / 6,
+    "7₅": 19 / 10,
+    "7₇": 26 / 14,
+    "♯7₁₃": 25 / 13,
+    "π7": 243 / 128,
+    "♯7": e(23, 24),
+    "♯7₃": 35 / 18,
+    "♯7₇": 27 / 14
+  };
 
-  n = ["π3", "π4", "h4", "π6", "π7", "♮♭2", "♮2", "♮♭3", "♮3", "♮4", "♮♭5", "♮5", "♮♭6", "♮6", "♮♭7", "♮7", "♭2", "2", "♭3", "3", "4", "♭5", "♭6", "6", "♭7", "7", "5", "u"];
+  noteNames = {};
+
+  for (v in harmonics) {
+    k = harmonics[v];
+    noteNames[k] = v;
+  }
 
   playedNotes = [];
 
@@ -49,52 +142,80 @@
 
   texts = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "+", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", '"', "⏎", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?"];
 
-  keyboard = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 173, 61, 81, 87, 69, 82, 84, 89, 85, 73, 79, 80, 219, 221, 65, 83, 68, 70, 71, 72, 74, 75, 76, 59, 222, 13, 90, 88, 67, 86, 66, 78, 77, 188, 190, 191];
+  keyboard = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 173, 61, 81, 87, 69, 82, 84, 89, 85, 73, 79, 80, 219, 221, 65, 83, 68, 70, 71, 72, 74, 75, 76, 59, 222, 13, 90, 88, 67, 86, 66, 78, 77, 188, 190, 191, 32, 192];
 
   orders = {
-    7: [2, 3, 4, 5, 6],
-    8: [5, 1, 3, 5, 7],
-    9: [2, 1, 2, 4, 7, 8],
-    10: [7, 1, 3, 7, 9],
-    11: [2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    12: [7, 1, 5, 7, 11],
-    14: [9, 1, 3, 5, 9, 11, 13],
-    15: [11, 1, 2, 4, 8, 11, 13],
-    16: [9, 1, 3, 5, 7, 9, 11, 13, 15],
-    18: [5, 1, 5, 7, 11, 13, 17],
-    20: [11, 1, 3, 7, 9, 11, 13, 17, 19],
-    22: [17, 1, 3, 5, 7, 9, 13, 15, 17, 19, 21],
-    26: [7, 1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25],
-    28: [25, 1, 3, 5, 9, 11, 13, 15, 17, 19, 23, 25, 27],
-    30: [19, 1, 7, 11, 13, 17, 19, 23, 29],
-    34: [21, 1, 3, 5, 7, 9, 11, 13, 15, 19, 21, 23, 25, 27, 29, 31, 33],
-    36: [11, 1, 5, 7, 11, 13, 17, 19, 23, 29, 31, 35],
-    13: [5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    17: [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-    19: [7, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
-    21: [8, 1, 2, 4, 5, 8, 10, 11, 13, 16, 17, 19],
-    23: [16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
-    24: [7, 1, 5, 7, 11, 13, 17, 19, 23],
-    25: [22, 1, 2, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24],
-    27: [4, 1, 2, 4, 5, 7, 8, 10, 11, 13, 16, 17, 19, 22, 23, 25, 26],
-    29: [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
-    31: [19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
-    37: [32, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
-    41: [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 32, 34, 35, 36, 37, 38, 39, 40],
-    46: [29, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43]
+    7: 2,
+    8: 5,
+    9: 2,
+    10: 7,
+    11: 2,
+    12: 7,
+    13: 5,
+    14: 9,
+    15: 11,
+    16: 9,
+    17: 12,
+    18: 5,
+    19: 7,
+    20: 11,
+    21: 13,
+    22: 17,
+    23: 16,
+    24: 7,
+    25: 22,
+    26: 7,
+    27: 22,
+    28: 5,
+    29: 12,
+    30: 19,
+    31: 19,
+    32: 27,
+    34: 9,
+    35: 13,
+    36: 11,
+    37: 30,
+    41: 12,
+    46: 29,
+    48: 5,
+    50: 19,
+    100: 39
+  };
+
+  primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31];
+
+  findCoprimes = function(p) {
+    var coprimes, i, ifPrime, j, l, len, max, prime, ref;
+    coprimes = [];
+    max = p > 40 ? 40 : p - 1;
+    for (i = j = 0, ref = max; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
+      ifPrime = true;
+      for (l = 0, len = primes.length; l < len; l++) {
+        prime = primes[l];
+        if (i % prime === 0 && p % prime === 0) {
+          ifPrime = false;
+          break;
+        }
+      }
+      if (ifPrime) {
+        coprimes.push(i);
+      }
+    }
+    console.log(coprimes);
+    return coprimes;
   };
 
   shepard = [];
 
   nearestValue = function(haystack, needle) {
-    var curr, k, v;
-    curr = 0;
+    var curr;
+    curr = null;
     for (k in haystack) {
       v = haystack[k];
       if (needle === v) {
         return k;
       }
-      if (Math.abs(v - needle) < Math.abs(haystack[curr] - needle)) {
+      if (Math.abs(v - needle) < Math.abs(haystack[curr] - needle) || curr === null) {
         curr = k;
       }
     }
@@ -104,17 +225,17 @@
   currentChord = 0x0; // All notes being played, regardless of octave
 
   synthJSON = {
-    harmonicity: .1,
-    modulationIndex: 1,
+    harmonicity: 1,
+    modulationIndex: 1.3,
     envelope: {
       attack: 0.005,
-      decay: .6,
-      sustain: 0,
-      release: 1
+      decay: .8,
+      sustain: 1,
+      release: .1
     },
     oscillator: {
       type: 'custom',
-      partials: [1, .1, 0, 0, .01, .05]
+      partials: [1, .1, 0, 0, .01, .02]
     },
     // phase
     // type
@@ -124,7 +245,7 @@
     modulationEnvelope: {
       attack: 0.05,
       decay: 0.01,
-      sustain: 0.01,
+      sustain: 0.1,
       release: .1
     },
     portamento: .1
@@ -167,9 +288,10 @@
     var color, degree;
     degree = deg / tones * 360;
     color = colors[deg] / tones * 360;
-    $(SVG('text')).text(texts[deg]).attr('x', radius).attr('y', r).attr('text-anchor', 'middle').attr('font-size', r).attr('font-weight', "bold").attr('fill', "white").attr('transform', 'rotate(' + degree + ', 50, 50)').appendTo(canvas);
-    if (texts2[deg]) {
-      $(SVG('text')).text(texts2[deg]).attr('x', radius).attr('y', 22).attr('text-anchor', 'middle').attr('font-size', r / 1.8).attr('fill', "white").attr('transform', 'rotate(' + degree + ', 50, 50)').appendTo(canvas);
+    //.attr 'text-decoration', if harmonics[texts2[deg]]==freq/midfq then "underline" else "none"
+    $(SVG('text')).text(texts2[deg]).attr('x', radius).attr('y', r).attr('text-anchor', 'middle').attr('font-size', r).attr('fill', "white").attr('transform', 'rotate(' + degree + ', 50, 50)').appendTo(canvas);
+    if (texts[deg]) {
+      $(SVG('text')).text(texts[deg]).attr('x', radius).attr('y', 22).attr('text-anchor', 'middle').attr('font-size', r / 1.8).attr('fill', "white").attr('transform', 'rotate(' + degree + ', 50, 50)').appendTo(canvas);
     }
     return $(SVG('polygon')).attr('id', deg).attr('freq', freq).attr('fill', 'hsl(' + color + ',100%,50%)').attr('fill-opacity', '.6').attr('points', points).attr('transform-box', 'fill-box').attr('transform-origin', 'center').attr('transform', 'rotate(' + degree + ', 0, 0)').on('touchstart mousedown', function() {
       drag = true;
@@ -187,7 +309,7 @@
   };
 
   drawTones = function() {
-    var deg, deg2, i, j, k, ref, ref1, results, v;
+    var deg, deg2, j, l, ref, ref1, results;
     canvas = $('#polytune');
     canvas.empty();
     cX = canvas.attr('width') / 2 || 50;
@@ -204,62 +326,68 @@
     points += cX - r2 + "," + r3;
     $(SVG('circle')).attr('cx', cX).attr('cy', cY).attr('r', radius - r3 / 2).attr('fill', 'black').attr('fill-opacity', '.1').attr('stroke', 'black').attr('stroke-width', r3).appendTo(canvas);
     freqs = [];
-    for (deg = i = 0, ref = tones - 1; (0 <= ref ? i <= ref : i >= ref); deg = 0 <= ref ? ++i : --i) {
-      deg2 = (deg * orders[tones][order]) % tones;
-      colors[deg2] = (deg * orders[tones][0]) % tones;
+    texts2 = [];
+    if (!order) {
+      order = orders[tones];
+    }
+    for (deg = j = 0, ref = tones - 1; (0 <= ref ? j <= ref : j >= ref); deg = 0 <= ref ? ++j : --j) {
+      deg2 = (deg * order) % tones;
+      colors[deg2] = (deg * orders[tones]) % tones;
       freqs[deg2] = e(deg, tones) * midfq;
       shepard[freqs[deg2]] = [(tones - deg) / tones, deg / tones];
-    }
-    texts2 = [];
-    for (k in h) {
-      v = h[k];
-      texts2[nearestValue(freqs, v * midfq)] = n[k];
+      texts2[deg2] = nearestValue(harmonics, freqs[deg2] / midfq);
     }
     results = [];
-    for (deg = j = 0, ref1 = tones - 1; (0 <= ref1 ? j <= ref1 : j >= ref1); deg = 0 <= ref1 ? ++j : --j) {
+    for (deg = l = 0, ref1 = tones - 1; (0 <= ref1 ? l <= ref1 : l >= ref1); deg = 0 <= ref1 ? ++l : --l) {
       results.push(drawTone(tones, freqs[deg], deg));
     }
     return results;
   };
 
   updateOrder = function() {
-    var k, noteOrderForm, ref, v;
+    var j, len, noteOrderForm, noteOrders;
     $('form #noteNumbers').val(tones);
     noteOrderForm = $('form #noteOrder');
     noteOrderForm.empty();
-    ref = orders[tones];
-    for (k in ref) {
-      v = ref[k];
-      noteOrderForm.append(new Option((k === 0 ? "Order (" + v + ")" : v), k));
+    noteOrders = findCoprimes(tones);
+    noteOrders.unshift(orders[tones]);
+    for (v = j = 0, len = noteOrders.length; j < len; v = ++j) {
+      k = noteOrders[v];
+      noteOrderForm.append(new Option(k, k));
     }
-    return noteOrderForm.val(order);
+    noteOrderForm.val(orders[tones]);
+    return $('form #midfq').val(midfq);
   };
 
   $(window).on("load", function() {
-    drawTones();
+    var url;
+    url = new URLSearchParams(window.location.search);
+    for (k in orders) {
+      v = orders[k];
+      $('form #noteNumbers').append(new Option(k, k));
+    }
     updateOrder();
+    drawTones();
     $('body').on('keydown', function(e) {
       if (keyboard.indexOf((e.which != null) > tones)) {
-        noteStart(keyboard.indexOf(e.which));
+        return noteStart(keyboard.indexOf(e.which));
       }
-      return null;
     });
     $('body').on('keyup', function(e) {
       if (keyboard.indexOf((e.which != null) > tones)) {
-        noteEnd(keyboard.indexOf(e.which));
+        return noteEnd(keyboard.indexOf(e.which));
       }
-      return null;
     });
     $('form #noteNumbers').change(function() {
       tones = this.value;
       order = 0;
       updateOrder();
-      $('form #noteOrder').val(0);
       drawTones();
       return canvas.focus();
     });
     return $('form #noteOrder').change(function() {
       order = this.value;
+      console.log(order);
       drawTones();
       return canvas.focus();
     });
