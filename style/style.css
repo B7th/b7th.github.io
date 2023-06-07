@@ -1,0 +1,365 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+@font-face {
+  font-family: "Frederika";
+  src: local("Frederika the Great"), url("Frederika.ttf") format("opentype");
+}
+@font-face {
+  font-family: "Amita";
+  src: local("Amita"), url("Amita-bold.ttf") format("opentype");
+}
+@font-face {
+  font-family: "Estonia";
+  src: local("Estonia"), url("Estonia-Regular.ttf") format("opentype");
+}
+html {
+  min-height: -webkit-fill-available;
+}
+body {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: Amita, serif;
+  background: #2e0033 url("bookCover.png") center center repeat;
+}
+header,
+footer {
+  font-family: Frederika, "Academy Engraved LED", serif;
+  position: relative;
+}
+header {
+  height: 100vh;
+}
+footer p,
+p.top {
+  font-size: 10pt;
+  font-weight: bold;
+  text-align: center;
+  color: #ffd700;
+}
+footer p a,
+p.top a {
+  color: inherit;
+}
+footer p {
+  padding: 4em;
+}
+a {
+  color: #910081;
+}
+a:hover {
+  color: #ec00d2;
+}
+a:active {
+  color: #ffa4f5;
+}
+a:visited {
+  color: #360030;
+}
+header h1,
+header h2,
+header h3 {
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: -1.5px -2px rgba(1,1,1,0.25), 1.5px 1.5px rgba(255,255,255,0.25);
+  color: #ffd700;
+  padding: 0;
+  width: 100vw;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+@media print {
+  header h1,
+  header h2,
+  header h3 {
+    position: relative;
+    min-height: auto;
+    color: #000;
+  }
+}
+header h1 em,
+header h2 em,
+header h3 em {
+  display: block;
+  font-size: 200%;
+  background-image: -webkit-linear-gradient(top, #ffd700, #ffd700, #806c00);
+  background-image: -moz-linear-gradient(top, #ffd700, #ffd700, #806c00);
+  background-image: -o-linear-gradient(top, #ffd700, #ffd700, #806c00);
+  background-image: -ms-linear-gradient(top, #ffd700, #ffd700, #806c00);
+  background-image: linear-gradient(to bottom, #ffd700, #ffd700, #806c00);
+  color: transparent;
+  -webkit-background-clip: text;
+}
+@media (max-width: 70em) {
+  header h1 em,
+  header h2 em,
+  header h3 em {
+    font-size: 180%;
+  }
+}
+@media print {
+  header h1 em,
+  header h2 em,
+  header h3 em {
+    color: #000;
+  }
+}
+hr {
+  column-break-before: always;
+  -webkit-column-break-before: always;
+}
+nav,
+article,
+aside {
+  margin: 20pt 10pt;
+  padding: 10pt;
+  min-height: 100vh;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: #faf8ea url("page.png") center center repeat;
+}
+@media print {
+  nav,
+  article,
+  aside {
+    min-height: auto;
+  }
+}
+nav h2 {
+  text-align: center;
+}
+nav strong,
+nav em,
+nav .day {
+  display: block;
+  text-align: center;
+}
+nav strong {
+  font-size: 180%;
+  margin: 1em;
+}
+nav em {
+  font-size: 170%;
+  font-weight: bold;
+  margin: 0.9em;
+}
+nav .day {
+  font-size: 120%;
+  margin: 0.8em;
+}
+@media (min-width: 80em) {
+  article,
+  aside {
+    padding: 30pt;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+  }
+}
+h1,
+h2,
+h3 {
+  font-weight: bold;
+  font-family: Frederika, "Academy Engraved LED", serif;
+  padding: 25pt 12.5pt;
+  text-shadow: -1px -1.5px rgba(1,1,1,0.25), 1px 1px rgba(255,255,255,0.25);
+  color: #360030;
+  background-image: -webkit-linear-gradient(top, #ec00d2, #4d0044, #1b0018);
+  background-image: -moz-linear-gradient(top, #ec00d2, #4d0044, #1b0018);
+  background-image: -o-linear-gradient(top, #ec00d2, #4d0044, #1b0018);
+  background-image: -ms-linear-gradient(top, #ec00d2, #4d0044, #1b0018);
+  background-image: linear-gradient(to bottom, #ec00d2, #4d0044, #1b0018);
+  color: transparent;
+  -webkit-background-clip: text;
+  -background-clip: text;
+}
+@media print {
+  h1,
+  h2,
+  h3 {
+    color: #000;
+  }
+}
+h1,
+h2 {
+  font-size: 3em;
+}
+h3,
+h4 {
+  font-size: 2em;
+  padding-left: 25pt;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+h5 {
+  font-family: Amita, serif;
+  font-size: 1.5em;
+  padding-left: 37.5pt;
+}
+article p,
+aside p {
+  font-size: 20pt;
+  line-height: 25pt;
+  padding: 0 37.5pt 25pt;
+  color: #31002b;
+}
+article p:has(img),
+aside p:has(img) {
+  clear: both;
+}
+article p:nth-child(even) img,
+aside p:nth-child(even) img {
+  float: right;
+  padding: 0 0 1em 1em;
+}
+article img {
+  float: left;
+  clear: auto;
+  width: 8em;
+  padding: 0 1em 1em 0;
+}
+p:last-child em {
+  padding: 0.5em 1em;
+  font-size: 2.5em;
+  font-weight: normal;
+}
+article em,
+aside em {
+  font-family: Estonia, serif;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 1.8em;
+}
+strong {
+  font-weight: bold;
+  color: #360030;
+}
