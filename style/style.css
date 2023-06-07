@@ -127,7 +127,7 @@ table {
 }
 @font-face {
   font-family: "Amita";
-  src: local("Amita"), url("Amita-bold.ttf") format("opentype");
+  src: local("Amita"), url("Amita-Bold.ttf") format("opentype");
 }
 @font-face {
   font-family: "Estonia";
