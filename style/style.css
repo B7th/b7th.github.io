@@ -141,7 +141,7 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   font-family: Amita, serif;
-  background: #2e0033 url("BookCover.png") center center repeat;
+  background: #2e0033 url("bookCover.png") center center repeat;
 }
 header,
 footer {
@@ -176,6 +176,18 @@ a:active {
 }
 a:visited {
   color: #360030;
+}
+header h1 {
+  -webkit-animation-name: spark;
+  -moz-animation-name: spark;
+  -o-animation-name: spark;
+  -ms-animation-name: spark;
+  animation-name: spark;
+  -webkit-animation-duration: 2s;
+  -moz-animation-duration: 2s;
+  -o-animation-duration: 2s;
+  -ms-animation-duration: 2s;
+  animation-duration: 2s;
 }
 header h1,
 header h2,
@@ -245,7 +257,7 @@ aside {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  background: #faf8ea url("Page.png") center center repeat;
+  background: #faf8ea url("page.png") center center repeat;
 }
 @media print {
   nav,
@@ -362,4 +374,60 @@ aside em {
 strong {
   font-weight: bold;
   color: #360030;
+}
+@-moz-keyframes spark {
+  from {
+    opacity: 0;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    font-size: 1.95em;
+  }
+  to {
+    opacity: 1;
+    -ms-filter: none;
+    filter: none;
+    font-size: 2em;
+  }
+}
+@-webkit-keyframes spark {
+  from {
+    opacity: 0;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    font-size: 1.95em;
+  }
+  to {
+    opacity: 1;
+    -ms-filter: none;
+    filter: none;
+    font-size: 2em;
+  }
+}
+@-o-keyframes spark {
+  from {
+    opacity: 0;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    font-size: 1.95em;
+  }
+  to {
+    opacity: 1;
+    -ms-filter: none;
+    filter: none;
+    font-size: 2em;
+  }
+}
+@keyframes spark {
+  from {
+    opacity: 0;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    filter: alpha(opacity=0);
+    font-size: 1.95em;
+  }
+  to {
+    opacity: 1;
+    -ms-filter: none;
+    filter: none;
+    font-size: 2em;
+  }
 }
