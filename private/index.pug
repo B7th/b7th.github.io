@@ -1,0 +1,49 @@
+- function getMonthName(monthNumber) {const date = new Date();date.setMonth(monthNumber - 1);return date.toLocaleString('en-US', {month: 'long'});}
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    link(href="style/style.css" rel="stylesheet")
+    script(src="style/jquery.js")
+    script(src="style/function.js")
+    title Charms of the Different World
+  body
+    header
+      h1
+        em= "Martin "
+        = "and the "
+        em= "Charms "
+        = "of the "
+        em Different World
+    nav
+      h2 Pages
+      ul.years
+        li.year
+          strong: a(href="#thanks") Thanks
+        each months,year in document.posts
+          li.year
+            strong= year
+            ul.months
+              each days, month in months
+                li.month
+                  em= getMonthName(month)
+                  ul.days
+                    each post,day in days
+                      li.day
+                        a(href="#p"+year+month+day)= post.title
+    aside#thanks
+      include:markdown-it thanks.md          
+    main
+      each months, year in document.posts
+            each days, month in months
+              section
+                header: h2.month= getMonthName(month) + " " + year
+                each post, day in days
+                  article
+                    h3(id="p"+year+month+day)= post.title
+                    | !{post.content}
+                  p.top: a(href="#") Return to top
+    footer
+      p The series of notes here contained is what I wish to see seeped into our world.
+      p Should you wish more that is shown, or simply want to be informed if there is more content, kindly contact me at the following email:
+      p B7th at proton dot me
