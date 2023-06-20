@@ -1,5 +1,7 @@
 # mBoxd provides dynamo-static content by watching files for changes
+# Todo: Turn code asynchronous
 require('console-stamp')(console, 'HH:MM:ss.l')
+logging = true
 engine = 
   requires:
     watch:   'node-watch'
@@ -19,8 +21,10 @@ engine =
     users:
       admin: "password"
   
-  
-    
+  async: (err, array) =>
+    return console.log err if err
+    array = array.shift()
+    async err, array
   
   read: (name) =>
     @fs.readFileSync name, encoding: 'utf8'
@@ -35,11 +39,11 @@ engine =
     
     
   watch: (name) =>
-    #Nothing to do
     try
       nameInto= name.replace @from, @into
-      if /\/_/.test(name) or /\/\.DS/.test(name) or !@fs.existsSync(name)
-        return null 
+      console.log name,nameInto
+      #Nothing to do
+      return null if /\/_/.test(name) or /\/\.DS/.test(name) or !@fs.existsSync(name)
       if @fs.statSync(name).isDirectory()
         return null if !@fs.existsSync(nameInto)
         return @fs.mkdirSync nameInto
@@ -51,7 +55,7 @@ engine =
       #Let's gooo
       this[ext] name, engine.write
     catch e
-      console.log e
+      @log e
     
   
   exts:
@@ -171,16 +175,19 @@ engine =
         #@log @data
   
   
-  
+  log: () =>
+    console.log arguments if logging
   core: (options) =>
     for key, value of engine.requires
       this[key] = if typeof value is 'string' then require value else value
-    @base = options.base or require.main.filename.replace /[^/]+$/, ''
+    @base = options.base or require.main.filename.replace /\/[^/]+$/, ''
     @data = {};try @data = @yaml.readSync @base + @options.from + '/data.yml'
     this[key]  = val for key,val of engine.exts
     @options = engine.options
     @options[key] = val for key,val of options
-    @from = @base + '/' + @options.from;@into = @base + '/' + @options.into;@via = @base + '/' + @options.via
+    @from = (@base + "/" + @options.from).replace /\/$/, ''
+    @into = (@base + "/" + @options.into).replace /\/$/, ''
+    @via  = (@base + "/" + @options.via).replace /\/$/, ''
     app = @express()
     app.use require('body-parser').urlencoded(extended:true);app.use require('body-parser').json()
     auth = require('express-basic-auth')
@@ -198,6 +205,8 @@ engine =
     app.set    'views',@data.from
     app.engine 'pug',   engine.exts.pug.engine
     app.engine 'pug',  (filePath, @options, callback) -> null
+    
+    @log @from, @via, @into
     
     @watch @from, engine.watch
     
