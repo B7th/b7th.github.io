@@ -1,8 +1,5 @@
 ## Thanks
 
-This web book is a work in progress grimmoire containing creations, spells,
-and all things magical that came upon me through years of insight, struggles, joys, and meaning.
-
 This would not have been possible without the help of Phoenix Rising Metaphysical Emporium,
 located in Langley, British Columbia.
 Goldie and Jens, you both have helped me feel valid as both a witch and a crafts person,

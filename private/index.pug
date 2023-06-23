@@ -19,6 +19,7 @@ html
       h2 Pages
       ul.years
         li.year
+          strong: a(href="#purpose") Purpose
           strong: a(href="#thanks") Thanks
         each months,year in document.posts
           li.year
@@ -28,21 +29,25 @@ html
                 li.month
                   em= getMonthName(month)
                   ul.days
-                    each post,day in days
+                    - days = Object.keys(days).sort()
+                    each day in days
                       li.day
-                        a(href="#p"+year+month+day)= post.title
+                        a(href="#p"+year+month+day)= months[month][day].title
+    aside#purpose
+      include:markdown-it purpose.md  
     aside#thanks
       include:markdown-it thanks.md          
     main
       each months, year in document.posts
-            each days, month in months
-              section
-                header: h2.month= getMonthName(month) + " " + year
-                each post, day in days
-                  article
-                    h3(id="p"+year+month+day)= post.title
-                    | !{post.content}
-                  p.top: a(href="#") Return to top
+        each days, month in months
+          section
+            header: h2.month= getMonthName(month) + " " + year
+            - days = Object.keys(days).sort()
+            each day in days
+              article
+                h3(id="p"+year+month+day)= months[month][day].title
+                | !{months[month][day].content}
+              p.top: a(href="#") Return to top
     footer
       p The series of notes here contained is what I wish to see seeped into our world.
       p Should you wish more that is shown, or simply want to be informed if there is more content, kindly contact me at the following email:
