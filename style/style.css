@@ -290,13 +290,15 @@ nav .day {
 }
 @media (min-width: 70em) {
   article,
-  aside {
+  aside,
+  nav {
     padding: 30pt;
     -moz-column-fill: balance;
     -webkit-column-count: 2;
     -moz-column-count: 2;
     column-count: 2;
     orphans: 2;
+    widows: 2;
     -webkit-column-rule: 1px solid rgba(0,0,0,0.125);
     -moz-column-rule: 1px solid rgba(0,0,0,0.125);
     column-rule: 1px solid rgba(0,0,0,0.125);
