@@ -89,6 +89,8 @@ header h1, header h2, header h3
     @media print
       color black
 
+header h2
+  font-size 4em
 hr
   column-break-before always
   -webkit-column-break-before always
@@ -138,9 +140,9 @@ h1, h2, h3
   @media print
     color black
 h1, h2
-  font-size 3em
+  font-size 4em
 h3, h4
-  font-size 2em
+  font-size 4em
   padding-left 25pt
   padding-top 1em
   padding-bottom 1em
@@ -159,7 +161,10 @@ article p, aside p
   &:nth-child(even) img
     float right
     padding 0 0 1em 1em
-
+footer p
+  font-size 18pt
+p.top
+  font-size 12pt
 article img
   float left
   clear auto
@@ -175,6 +180,10 @@ article em, aside em
   font-style italic
   font-weight bold
   font-size 1.8em
+  padding-right .2em
+article strong
+  font-family Frederika, serif
+  font-size 105%
 
 strong
   font-weight bold
