@@ -1,4 +1,5 @@
 # 
+console.log "hello"
 app = require('./yams.coffee')
   port: 4000
   base: __dirname
