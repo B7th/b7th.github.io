@@ -46,10 +46,9 @@ em{
   font-size:3.5vw;
   font-weight:bold;
 }
-.blink{
-}
 </style>
 <script type="text/javascript">
+
 sets=[
 [4,"#ff0","Mustard"],
 [4,"#f88","Ketchup"],
@@ -79,27 +78,43 @@ sets=[
 [.001,"#f8f","Test A"],
 [.001,"#fa6","Test B"]
 ]
+function getCookie(name) {
+    let cookieArr = document.cookie.split(";");
+    for(let i = 0; i < cookieArr.length; i++) {
+        let cookiePair = cookieArr[i].split("=");
+        if(name == cookiePair[0].trim()) {return decodeURIComponent(cookiePair[1]);}
+    }return null;
+}
+function setCookie(name, value, daysToLive=365) {
+    let cookie = name + "=" + encodeURIComponent(value);
+    if(typeof daysToLive === "number") {
+        cookie += "; max-age=" + (daysToLive*24*60*60);
+        document.cookie = cookie;
+    }
+}
+setsCookie=JSON.parse(getCookie("sets"));
+if(!setsCookie)
+  setCookie("sets",JSON.stringify(sets));
+sets=setsCookie;
 timers = [];
 timersOn = [];
 names = [];
 durations = [];
 colours = [];
-for(i=0;i<24;i++){
-  timers[i]=0;
-  timersOn[i]=false;
-  names[i]=sets[i][2];
-  durations[i]=sets[i][0];
-  colours[i]=sets[i][1];
-}
+
 var context = new AudioContext();
 var oscillator = context.createOscillator();
 oscillator.type = "sawtooth";
 oscillator.frequency.value = 800;
+start = 0;
+
 function jumpStart(){//when the page is loaded
   for(i=0;i<24;i++){
-    $("#a"+i).click(function(){
-      startTimer(parseInt($(this).attr("id").slice(1)));
-    });
+    timers[i]=0;
+    timersOn[i]=false;
+    names[i]=sets[i][2];
+    durations[i]=sets[i][0];
+    colours[i]=sets[i][1];
     $("#n"+i).text(names[i]);
     $("#a"+i).css({"background-color":colours[i],"color":"#000"});
     resetTimer(i);
@@ -170,6 +185,27 @@ function stopTimer(id){
 }
 $(document).ready(function(){
   jumpStart();
+  for(i=0;i<24;i++){
+    $("#a"+i).on("mousedown",function(){
+      start = new Date().getTime();
+    });
+    $("#a"+i).on("mouseup",function(){
+      id=parseInt($(this).attr("id").slice(1));
+      if(new Date().getTime() > start + 1000)
+      {
+        name=prompt("New condiment name:",names[id]);
+        duration=prompt("New duration in hour:",durations[id]);
+        colour=prompt("New colour:",colours[id]);
+        sets[id]=[duration,colour,name];
+        setCookie("sets",JSON.stringify(sets));
+        jumpStart();
+      }
+    });
+    $("#a"+i).click(function(){
+      id=parseInt($(this).attr("id").slice(1));
+      startTimer(id);
+    });
+  }
   var intervalId = window.setInterval(function(){
     updateTimers();
   }, 1000);
