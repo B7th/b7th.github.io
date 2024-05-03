@@ -146,6 +146,7 @@ function resetTimer(id){
   $('#t'+id+" i").removeClass("hidden");
   $('#t'+id+" u").text("00");
 }
+oscillatorStarted = false;
 function startTimer(id){
   timersOn[id]=true;
   timers[id]=durations[id]*60*60;
@@ -153,7 +154,10 @@ function startTimer(id){
   $("#a"+id).click(function(){
     stopTimer(parseInt($(this).attr("id").slice(1)));
   });
-  oscillator.start();
+  if(!oscillatorStarted){
+    oscillatorStarted=true;
+    oscillator.start(0);
+  }
 }
 function stopTimer(id){
   timersOn[id]=false;
