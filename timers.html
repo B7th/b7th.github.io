@@ -158,8 +158,12 @@ function updateTimers(){
     beepingTime=0;
     if(beeping)stopBeep();
   }
-  if(beepingTime>60*10)//MERCY
+  if(beepingTime>60*10){//MERCY
+    for(i=0;i<24;i++){
+      stopTimer(i);
+    }
     stopBeep();
+  }
 }
 function startBeep(){
   beeping=true;
