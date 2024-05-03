@@ -108,7 +108,7 @@ colours = [];
 
 var context = new AudioContext();
 var oscillator = context.createOscillator();
-oscillator.type = "sawtooth";
+oscillator.type = "square";
 oscillator.frequency.value = 800;
 start = 0;
 
@@ -151,9 +151,14 @@ function updateTimers(){
   }
   if(beep){
     beepingTime++;
+    /*Chaos* /
     if(!beeping)startBeep();
     phase=!phase;
     oscillator.frequency.value = (440/beep)+Math.random()*220*beep;
+    /**/
+    /*Not as chaos*/
+    toggleBeep();
+    /**/
   }else{
     beepingTime=0;
     if(beeping)stopBeep();
@@ -164,6 +169,12 @@ function updateTimers(){
     }
     stopBeep();
   }
+}
+function toggleBeep(){
+  if(beeping)
+    stopBeep();
+  else
+    startBeep();
 }
 function startBeep(){
   beeping=true;
