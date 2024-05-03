@@ -201,6 +201,21 @@ $(document).ready(function(){
         jumpStart();
       }
     });
+    $("#a"+i).on("touchstart",function(){
+      start = new Date().getTime();
+    });
+    $("#a"+i).on("touchend",function(){
+      id=parseInt($(this).attr("id").slice(1));
+      if(new Date().getTime() > start + 1000)
+      {
+        name=prompt("New condiment name:",names[id]);
+        duration=prompt("New duration in hour:",durations[id]);
+        colour=prompt("New colour:",colours[id]);
+        sets[id]=[duration,colour,name];
+        setCookie("sets",JSON.stringify(sets));
+        jumpStart();
+      }
+    });
     $("#a"+i).click(function(){
       id=parseInt($(this).attr("id").slice(1));
       startTimer(id);
