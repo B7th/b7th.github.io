@@ -8,7 +8,7 @@
 html{
   background:white;
   text:black;
-  font-family:"Courier",monospace;
+  font-family:"Gill Sans",monospace;
 }
 table{
   margin: auto;
@@ -44,6 +44,7 @@ strong{
 }
 em{
   font-size:3.5vw;
+  font-weight:bold;
 }
 .blink{
 }
@@ -55,28 +56,28 @@ sets=[
 [4,"#afa","Pickles"],
 [2,"#88f","White Onions"],
 [4,"#ffc","Teen"],
-[4,"#f84","Chipotle"],
+[4,"#fc8","Habanero"],
 
 [4,"#dd8","Uncle"],
 [4,"#f80","Mozza Sauce"],
 [4,"#4f4","BB. Pickles"],
 [2,"#f8f","Red Onions"],
 [4,"#fec","Mayo"],
-[4,"#fc8","Habanero"],
+[4,"#fa6","Piri"],
 
 [2,"#f80","Cheddar"],
 [2,"#aaa","Mozza Cheese"],
 [2,"#8f8","Lettuce"],
 [2,"#f66","Tomato"],
 [4,"#fed","Margarine"],
-[4,"#f62","Nashville"],
+[4,"#f62","Limited Sauce"],
 
 [2,"#ff4","Cheese Curds"],
-[6,"#ca0","Gravy"],
-[4,"#8ff","LTO1"],
-[4,"#88f","LTO2"],
-[4,"#f8f","LTO3"],
-[4,"#fa6","Piri"]
+[2,"#ca0","Eggs"],
+[1,"#8ff","Back Buckets"],
+[1,"#88f","Front Buckets"],
+[.001,"#f8f","LTO3"],
+[.001,"#fa6","Limited Sauce2"]
 ]
 timers = [];
 timersOn = [];
@@ -90,6 +91,11 @@ for(i=0;i<24;i++){
   durations[i]=sets[i][0];
   colours[i]=sets[i][1];
 }
+var context = new AudioContext();
+var oscillator = context.createOscillator();
+oscillator.type = "sawtooth";
+oscillator.frequency.value = 800;
+oscillator.start();
 function jumpStart(){//when the page is loaded
   for(i=0;i<24;i++){
     $("#a"+i).click(function(){
@@ -100,7 +106,10 @@ function jumpStart(){//when the page is loaded
     resetTimer(i);
   }
 }
+phase=false;
+beeping=false;
 function updateTimers(){
+  beep=false;
   for(i=0;i<24;i++){
     if(timersOn[i]){
       $('#t'+i+" b").text(Math.floor(Math.abs(timers[i]/60/60)));
@@ -114,8 +123,24 @@ function updateTimers(){
       temp=$("#a"+i).css("background-color");
       $("#a"+i).css("background-color",$("#a"+i).css("color"));
       $("#a"+i).css("color",temp);
+      beep=true;
     }
   }
+  if(beep){
+    if(!beeping)startBeep();
+    phase=!phase;
+    oscillator.frequency.value = phase?600:800;
+  }else{
+    if(beeping)stopBeep();
+  }
+}
+function startBeep(){
+  beeping=true;
+  oscillator.connect(context.destination);
+}
+function stopBeep(){
+  beeping=false;
+  oscillator.disconnect(context.destination);
 }
 function resetTimer(id){
   $('#t'+id+" b").text(durations[id]);
