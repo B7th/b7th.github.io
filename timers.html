@@ -6,7 +6,7 @@
 </script>
 <style type="text/css">
 html{
-  background:white;
+  background:black;
   text:black;
   font-family:"Gill Sans",monospace;
 }
@@ -24,15 +24,16 @@ b,i,u,em{
 td{
  background:grey;
  text:black;
- border-radius: 20px;
+ border-radius: 30px;
  width:15.5vw;
  height:21vh;
- opacity:.5;
+ opacity:.7;
  border:2px solid grey;
 }
 td.on{
   opacity:1;
- border:2px solid black;
+  border:2px solid white;
+  box-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff;
 }
 strong,em{
  display:block;
@@ -51,7 +52,7 @@ em{
 
 sets=[
 [4,"#ff0","Mustard"],
-[4,"#f88","Ketchup"],
+[4,"#f22","Ketchup"],
 [4,"#afa","Pickles"],
 [2,"#88f","White Onions"],
 [4,"#ffc","Teen"],
@@ -116,7 +117,11 @@ function jumpStart(){//when the page is loaded
     durations[i]=sets[i][0];
     colours[i]=sets[i][1];
     $("#n"+i).text(names[i]);
-    $("#a"+i).css({"background-color":colours[i],"color":"#000"});
+    $("#a"+i).css({
+      "background-color":colours[i],
+      "color":(2*parseInt(colours[i][1],16) + 3*parseInt(colours[i][2],16) + parseInt(colours[i][3],16))<40
+        ?"#fff":"#000"});
+    
     resetTimer(i);
   }
 }
