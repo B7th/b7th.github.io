@@ -52,7 +52,7 @@ em{
 }
 </style>
 <script type="text/javascript">
-
+//Basic set of 24 condiments
 sets=[
 [4,"#ff0","Mustard"],
 [4,"#f22","Ketchup"],
@@ -82,175 +82,176 @@ sets=[
 [.001,"#f8f","Test A"],
 [.001,"#fa6","Test B"]
 ];
-function getCookie(name) {
+//Cookies functions for setting and getting, as well as the customized version holder
+cookies={
+  get: function(name){
     let cookieArr = document.cookie.split(";");
     for(let i = 0; i < cookieArr.length; i++) {
         let cookiePair = cookieArr[i].split("=");
         if(name == cookiePair[0].trim()) {return decodeURIComponent(cookiePair[1]);}
     }return null;
-}
-function setCookie(name, value, daysToLive=365) {
+  },
+  set: function(name, value, daysToLive=365) {
     let cookie = name + "=" + encodeURIComponent(value);
     if(typeof daysToLive === "number") {
-        cookie += "; max-age=" + (daysToLive*24*60*60);
-        document.cookie = cookie;
+      cookie += "; max-age=" + (daysToLive*24*60*60);
+      document.cookie = cookie;
     }
-}
-setsCookie=JSON.parse(getCookie("sets"));
-if(!setsCookie)
-  setCookie("sets",JSON.stringify(sets));
-sets=setsCookie;
-timers = [];
-timersOn = [];
-names = [];
-durations = [];
-colours = [];
+  },
+  sets:[]
+};
+cookies.sets=JSON.parse(cookies.get("sets"))
+if(!cookies.sets)
+  cookies.set("sets",JSON.stringify(sets));
+sets=cookies.sets;
 
-var context = new AudioContext();
-var oscillator = context.createOscillator();
+durations = [];
+timersOn = [];
+colours = [];
+timers = [];
+names = [];
+
+//Simple sound
+context = new AudioContext();
+oscillator = context.createOscillator();
 oscillator.type = "square";
 oscillator.frequency.value = 800;
-start = 0;
-
-function jumpStart(){//when the page is loaded
-  for(i=0;i<24;i++){
-    timers[i]=0;
-    timersOn[i]=false;
-    names[i]=sets[i][2];
-    durations[i]=sets[i][0];
-    colours[i]=sets[i][1];
-    $("#n"+i).text(names[i]);
-    $("#a"+i).css({
-      "background-color":colours[i],
-      "color":(2*parseInt(colours[i][1],16) + 3*parseInt(colours[i][2],16) + parseInt(colours[i][3],16))<40
-        ?"#fff":"#000"});
-    
-    resetTimer(i);
+beeper = {
+  started:false,
+  phase:false,
+  on:false,
+  time: 0,
+  count: 0,
+  toggle: function(){
+    if(this.on)
+      this.stop();
+    else
+      this.start();
+  },
+  start: function(){
+    this.on=true;
+    oscillator.connect(context.destination);
+  },
+  stop: function(){
+    this.on=false;
+    oscillator.disconnect(context.destination);
   }
-}
-phase=false;
-beeping=false;
-beepingTime=0;
-function updateTimers(){
-  beep=0;
-  for(i=0;i<24;i++){
-    if(timersOn[i]){
-      $('#t'+i+" b").text(Math.floor(Math.abs(timers[i]/60/60)));
-      $('#t'+i+" i").toggleClass("hidden");
-      $('#t'+i+" u").text(parseInt(Math.abs(timers[i]/60%60)));
-      if($('#t'+i+" u").text().length==1)
-        $('#t'+i+" u").text("0"+$('#t'+i+" u").text());
-      timers[i]--;
-    }
-    if(timers[i]<0){
-      temp=$("#a"+i).css("background-color");
-      $("#a"+i).css("background-color",$("#a"+i).css("color"));
-      $("#a"+i).css("color",temp);
-      beep++;
-    }
-  }
-  if(beep){
-    beepingTime++;
-    /*Chaos* /
-    if(!beeping)startBeep();
-    phase=!phase;
-    oscillator.frequency.value = (440/beep)+Math.random()*220*beep;
-    /**/
-    /*Not as chaos*/
-    toggleBeep();
-    /**/
-  }else{
-    beepingTime=0;
-    if(beeping)stopBeep();
-  }
-  if(beepingTime>60*10){//MERCY
+};
+//Timer mixing both appearance and, well, timing checks
+timer = {
+  jumpstart: function(){
     for(i=0;i<24;i++){
-      stopTimer(i);
+      timers[i]=0;
+      timersOn[i]=false;
+      names[i]=sets[i][2];
+      durations[i]=sets[i][0];
+      colours[i]=sets[i][1];
+      $("#n"+i).text(names[i]);
+      $("#a"+i).css({
+        "background-color":colours[i],
+        "color":(2*parseInt(colours[i][1],16) + 3*parseInt(colours[i][2],16) + parseInt(colours[i][3],16))<40
+        ?"#fff":"#000"});
+      timer.reset(i);
     }
-    stopBeep();
+  },
+  update: function(){
+    beeper.count=0;
+    for(i=0;i<24;i++){
+      if(timersOn[i]){
+        $('#t'+i+" b").text(Math.floor(Math.abs(timers[i]/60/60)));
+        $('#t'+i+" i").toggleClass("hidden");
+        $('#t'+i+" u").text(parseInt(Math.abs(timers[i]/60%60)));
+        if($('#t'+i+" u").text().length==1)
+          $('#t'+i+" u").text("0"+$('#t'+i+" u").text());
+        timers[i]--;
+      }
+      if(timers[i]<0){
+        temp=$("#a"+i).css("background-color");
+        $("#a"+i).css("background-color",$("#a"+i).css("color"));
+        $("#a"+i).css("color",temp);
+        beeper.count++;
+      }
+    }
+    if(beeper.count){
+      beeper.time++;
+      /*Chaos* /
+      if(!beeping)startBeep();
+      phase=!phase;
+      oscillator.frequency.value = (440/beep)+Math.random()*220*beep;
+      /**/
+      /*A little chaos*/
+      oscillator.frequency.value = 800 * (1+beeper.count/12);
+      /**/
+      /*Not as chaos*/
+      beeper.toggle();
+      /**/
+    }else{
+      beeper.time=0;
+      if(beeper.on)beeper.stop();
+    }
+    if(beeper.time>60*10){//MERCY
+      for(i=0;i<24;i++){
+        stopTimer(i);
+      }
+      beeper.stop();
+    }
+  },
+  reset: function(id){
+    $('#t'+id+" b").text(durations[id]);
+    $('#t'+id+" i").removeClass("hidden");
+    $('#t'+id+" u").text("00");
+  },
+  start: function(id){
+    timersOn[id]=true;
+    timers[id]=durations[id]*60*60;
+    $('#a'+id).addClass("on");
+    $("#a"+id).click(function(){
+      timer.stop(parseInt($(this).attr("id").slice(1)));
+    });
+    if(!beeper.started){
+      beeper.started=true;
+      oscillator.start(0);
+    }
+  },
+  stop: function(id){
+    timersOn[id]=false;
+    timers[id]=0;
+    $('#a'+id).removeClass("on");
+    $("#a"+id).click(function(){
+      timer.start(timer.id(this));
+    });
+    timer.reset(id);
+  },
+  edit: function(id){
+    name=prompt("New condiment name:",names[id]);
+    duration=prompt("New duration in hour:",durations[id]);
+    colour=prompt("New colour:",colours[id]);
+    sets[id]=[duration,colour,name];
+    cookies.set("sets",JSON.stringify(sets));
+    timer.jumpstart();
+  },
+  id: function(ob){
+    return parseInt($(ob).attr("id").slice(1));
   }
-}
-function toggleBeep(){
-  if(beeping)
-    stopBeep();
-  else
-    startBeep();
-}
-function startBeep(){
-  beeping=true;
-  oscillator.connect(context.destination);
-}
-function stopBeep(){
-  beeping=false;
-  oscillator.disconnect(context.destination);
-}
-function resetTimer(id){
-  $('#t'+id+" b").text(durations[id]);
-  $('#t'+id+" i").removeClass("hidden");
-  $('#t'+id+" u").text("00");
-}
-oscillatorStarted = false;
-function startTimer(id){
-  timersOn[id]=true;
-  timers[id]=durations[id]*60*60;
-  $('#a'+id).addClass("on");
-  $("#a"+id).click(function(){
-    stopTimer(parseInt($(this).attr("id").slice(1)));
-  });
-  if(!oscillatorStarted){
-    oscillatorStarted=true;
-    oscillator.start(0);
-  }
-}
-function stopTimer(id){
-  timersOn[id]=false;
-  timers[id]=0;
-  $('#a'+id).removeClass("on");
-  $("#a"+id).click(function(){
-    startTimer(parseInt($(this).attr("id").slice(1)));
-  });
-  resetTimer(id);
-}
+};
+
 $(document).ready(function(){
-  jumpStart();
+  timer.jumpstart();
   for(i=0;i<24;i++){
-    $("#a"+i).on("mousedown",function(){
+    $("#a"+i).on("mousedown touchstart",function(e){
       start = new Date().getTime();
+      e.preventDefault();
     });
-    $("#a"+i).on("mouseup",function(){
-      id=parseInt($(this).attr("id").slice(1));
+    $("#a"+i).on("mouseup touchend",function(){
       if(new Date().getTime() > start + 1000)
-      {
-        name=prompt("New condiment name:",names[id]);
-        duration=prompt("New duration in hour:",durations[id]);
-        colour=prompt("New colour:",colours[id]);
-        sets[id]=[duration,colour,name];
-        setCookie("sets",JSON.stringify(sets));
-        jumpStart();
-      }
-    });
-    $("#a"+i).on("touchstart",function(){
-      start = new Date().getTime();
-    });
-    $("#a"+i).on("touchend",function(){
-      id=parseInt($(this).attr("id").slice(1));
-      if(new Date().getTime() > start + 1000)
-      {
-        name=prompt("New condiment name:",names[id]);
-        duration=prompt("New duration in hour:",durations[id]);
-        colour=prompt("New colour:",colours[id]);
-        sets[id]=[duration,colour,name];
-        setCookie("sets",JSON.stringify(sets));
-        jumpStart();
-      }
+        timer.edit(timer.id(this));
     });
     $("#a"+i).click(function(){
-      id=parseInt($(this).attr("id").slice(1));
-      startTimer(id);
+      timer.start(timer.id(this));
     });
   }
   var intervalId = window.setInterval(function(){
-    updateTimers();
+    timer.update();
   }, 1000);
 });
 </script>
