@@ -250,7 +250,6 @@ $(document).ready(function(){
   for(i=0;i<24;i++){
     $("#a"+i).on("mousedown touchstart",function(e){
       start = new Date().getTime();
-      e.preventDefault();
     });
     $("#a"+i).on("mouseup touchend",function(){
       if(new Date().getTime() > start + 1000)
