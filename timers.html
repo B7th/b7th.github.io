@@ -112,29 +112,46 @@ timers = [];
 names = [];
 
 //Simple sound
-context = new AudioContext();
-oscillator = context.createOscillator();
-oscillator.type = "square";
-oscillator.frequency.value = 800;
 beeper = {
   started:false,
   phase:false,
   on:false,
   time: 0,
   count: 0,
-  toggle: function(){
-    if(this.on)
-      this.stop();
-    else
-      this.start();
+  jumpstart: function(){
+    beeper.started=true;
+    beeper.context = new AudioContext();
+    beeper.oscillator = this.context.createOscillator();
+    beeper.oscillator.type = "square";
+    beeper.oscillator.frequency.value = 800;
+    beeper.oscillator.start();
   },
   start: function(){
-    this.on=true;
-    oscillator.connect(context.destination);
+    beeper.on=true;
+    beeper.oscillator.connect(beeper.context.destination);
   },
   stop: function(){
-    this.on=false;
-    oscillator.disconnect(context.destination);
+    beeper.on=false;
+    beeper.oscillator.disconnect(beeper.context.destination);
+  },
+  toggle: function(){
+    if(beeper.on)
+      beeper.stop();
+    else
+      beeper.start();
+  }
+};
+colour = {
+  set: function(i){
+    $("#a"+i).css({
+      "background-color":colours[i],
+      "color":(2*parseInt(colours[i][1],16) + 3*parseInt(colours[i][2],16) + parseInt(colours[i][3],16))<40
+      ?"#fff":"#000"});
+  },
+  flip: function(i){
+    temp=$("#a"+i).css("background-color");
+    $("#a"+i).css("background-color",$("#a"+i).css("color"));
+    $("#a"+i).css("color",temp);
   }
 };
 //Timer mixing both appearance and, well, timing checks
@@ -147,10 +164,7 @@ timer = {
       durations[i]=sets[i][0];
       colours[i]=sets[i][1];
       $("#n"+i).text(names[i]);
-      $("#a"+i).css({
-        "background-color":colours[i],
-        "color":(2*parseInt(colours[i][1],16) + 3*parseInt(colours[i][2],16) + parseInt(colours[i][3],16))<40
-        ?"#fff":"#000"});
+      colour.set(i);
       timer.reset(i);
     }
   },
@@ -166,9 +180,7 @@ timer = {
         timers[i]--;
       }
       if(timers[i]<0){
-        temp=$("#a"+i).css("background-color");
-        $("#a"+i).css("background-color",$("#a"+i).css("color"));
-        $("#a"+i).css("color",temp);
+        colour.flip(i);
         beeper.count++;
       }
     }
@@ -180,19 +192,18 @@ timer = {
       oscillator.frequency.value = (440/beep)+Math.random()*220*beep;
       /**/
       /*A little chaos*/
-      oscillator.frequency.value = 800 * (1+beeper.count/12);
+      beeper.oscillator.frequency.value = 800 * (1+beeper.count/12);
       /**/
       /*Not as chaos*/
       beeper.toggle();
       /**/
     }else{
-      beeper.time=0;
       if(beeper.on)beeper.stop();
     }
     if(beeper.time>60*10){//MERCY
-      for(i=0;i<24;i++){
-        stopTimer(i);
-      }
+      beeper.time=0;
+      for(i=0;i<24;i++)
+        timer.stop(i);
       beeper.stop();
     }
   },
@@ -206,12 +217,10 @@ timer = {
     timers[id]=durations[id]*60*60;
     $('#a'+id).addClass("on");
     $("#a"+id).click(function(){
-      timer.stop(parseInt($(this).attr("id").slice(1)));
+      timer.stop(timer.id(this));
     });
-    if(!beeper.started){
-      beeper.started=true;
-      oscillator.start(0);
-    }
+    if(!beeper.started)
+      beeper.jumpstart();
   },
   stop: function(id){
     timersOn[id]=false;
@@ -220,13 +229,14 @@ timer = {
     $("#a"+id).click(function(){
       timer.start(timer.id(this));
     });
+    colour.set(id);//Unflips
     timer.reset(id);
   },
   edit: function(id){
-    name=prompt("New condiment name:",names[id]);
-    duration=prompt("New duration in hour:",durations[id]);
-    colour=prompt("New colour:",colours[id]);
-    sets[id]=[duration,colour,name];
+    nam=prompt("New condiment name:",names[id]);
+    dur=prompt("New duration in hour:",durations[id]);
+    col=prompt("New colour:",colours[id]);
+    sets[id]=[dur,col,nam];
     cookies.set("sets",JSON.stringify(sets));
     timer.jumpstart();
   },
@@ -247,7 +257,8 @@ $(document).ready(function(){
         timer.edit(timer.id(this));
     });
     $("#a"+i).click(function(){
-      timer.start(timer.id(this));
+      if(new Date().getTime() < start + 1000)
+        timer.start(timer.id(this));
     });
   }
   var intervalId = window.setInterval(function(){
