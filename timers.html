@@ -257,8 +257,7 @@ $(document).ready(function(){
         timer.edit(timer.id(this));
     });
     $("#a"+i).on("click tap", function(){
-      if(new Date().getTime() < start + 1000)
-        timer.start(timer.id(this));
+      timer.start(timer.id(this));
     });
   }
   var intervalId = window.setInterval(function(){
