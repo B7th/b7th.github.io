@@ -216,7 +216,7 @@ timer = {
     timersOn[id]=true;
     timers[id]=durations[id]*60*60;
     $('#a'+id).addClass("on");
-    $("#a"+id).click(function(){
+    $("#a"+id).on("click tap", function(){
       timer.stop(timer.id(this));
     });
     if(!beeper.started)
@@ -226,7 +226,7 @@ timer = {
     timersOn[id]=false;
     timers[id]=0;
     $('#a'+id).removeClass("on");
-    $("#a"+id).click(function(){
+    $("#a"+id).on("click tap", function(){
       timer.start(timer.id(this));
     });
     colour.set(id);//Unflips
@@ -256,7 +256,7 @@ $(document).ready(function(){
       if(new Date().getTime() > start + 1000)
         timer.edit(timer.id(this));
     });
-    $("#a"+i).click(function(){
+    $("#a"+i).on("click tap", function(){
       if(new Date().getTime() < start + 1000)
         timer.start(timer.id(this));
     });
