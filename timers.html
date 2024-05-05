@@ -152,7 +152,7 @@ colour = {
   set: function(i){
     $("#a"+i).css({
       "background-color":colours[i],
-      "color":(2*parseInt(colours[i][1],16) + 3*parseInt(colours[i][2],16) + parseInt(colours[i][3],16))<40
+      "color":(2*parseInt(colours[i][1],16) + 3*parseInt(colours[i][2],16) + parseInt(colours[i][3],16))<55
       ?"#fff":"#000"});
   },
   flip: function(i){
@@ -181,8 +181,7 @@ timer = {
       if(timersOn[i]){
         $('#t'+i+" b").text(Math.floor(Math.abs(timers[i]/60/60)));
         $('#t'+i+" i").toggleClass("hidden");
-        temp=parseInt(Math.abs(timers[i]/60%60));
-        $('#t'+i+" u").text((temp<10?"0":"")+temp);
+        $('#t'+i+" u").text(String(parseInt(Math.abs(timers[i]/60%60))).padStart(2,"0"));
         timers[i]--;
       }
       if(timers[i]<0){
@@ -194,7 +193,7 @@ timer = {
       beeper.time++;
       if(beeper.chaos){
         if(!beeper.on)beeper.start();
-        beeper.oscillator.frequency.value = 404+(Math.random()-.5)*110*beeper.count;
+        beeper.oscillator.frequency.value = 404+(Math.random()-.5)*55*beeper.count;
         beeper.oscillator.type = beeper.types[beeper.type++%5];
       }
       else{
@@ -249,17 +248,17 @@ timer = {
 
 $(document).ready(function(){
   timer.jumpstart();
-  $("p").on("click tap", function(){beeper.chaos = !beeper.chaos;});
-  for(i=0;i<24;i++){
-    $("#a"+i).on("mousedown touchstart",function(e){
-      start = new Date().getTime();
-    }).on("mouseup touchend",function(){
-      if(new Date().getTime() > start + 1000)
-        timer.edit(timer.id(this));
-    }).on("click tap", function(){
-      timer.start(timer.id(this));
-    });
-  }
+  $("p").on("click tap", function(){
+    beeper.chaos = !beeper.chaos;
+  });
+  $("td").on("mousedown touchstart",function(e){
+    start = new Date().getTime();
+  }).on("mouseup touchend",function(){
+    if(new Date().getTime() > start + 1000)
+      timer.edit(timer.id(this));
+  }).on("click tap", function(){
+    timer.start(timer.id(this));
+  });
   var intervalId = window.setInterval(function(){
     timer.update();
   }, 1000);
