@@ -104,7 +104,7 @@ cookies.sets=JSON.parse(cookies.get("sets"))
 if(!cookies.sets)
   cookies.set("sets",JSON.stringify(sets));
 sets=cookies.sets;
-test=true;
+test=false;
 if(test){
   for(i=0;i<24;i++)
     sets[i][0]=.02;
