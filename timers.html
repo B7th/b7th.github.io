@@ -104,7 +104,11 @@ cookies.sets=JSON.parse(cookies.get("sets"))
 if(!cookies.sets)
   cookies.set("sets",JSON.stringify(sets));
 sets=cookies.sets;
-
+test=true;
+if(test){
+  for(i=0;i<24;i++)
+    sets[i][0]=.02;
+}
 durations = [];
 timersOn = [];
 colours = [];
@@ -113,8 +117,11 @@ names = [];
 
 //Simple sound
 beeper = {
+  chaos:false,
   started:false,
   phase:false,
+  type:0,
+  types:["triangle","sawtooth","square","sine"],
   on:false,
   time: 0,
   count: 0,
@@ -122,7 +129,7 @@ beeper = {
     beeper.started=true;
     beeper.context = new AudioContext();
     beeper.oscillator = this.context.createOscillator();
-    beeper.oscillator.type = "square";
+    beeper.oscillator.type = "triangle";
     beeper.oscillator.frequency.value = 800;
     beeper.oscillator.start();
   },
@@ -174,9 +181,8 @@ timer = {
       if(timersOn[i]){
         $('#t'+i+" b").text(Math.floor(Math.abs(timers[i]/60/60)));
         $('#t'+i+" i").toggleClass("hidden");
-        $('#t'+i+" u").text(parseInt(Math.abs(timers[i]/60%60)));
-        if($('#t'+i+" u").text().length==1)
-          $('#t'+i+" u").text("0"+$('#t'+i+" u").text());
+        temp=parseInt(Math.abs(timers[i]/60%60));
+        $('#t'+i+" u").text((temp<10?"0":"")+temp);
         timers[i]--;
       }
       if(timers[i]<0){
@@ -186,19 +192,17 @@ timer = {
     }
     if(beeper.count){
       beeper.time++;
-      /*Chaos* /
-      if(!beeping)startBeep();
-      phase=!phase;
-      oscillator.frequency.value = (440/beep)+Math.random()*220*beep;
-      /**/
-      /*A little chaos*/
-      beeper.oscillator.frequency.value = 800 * (1+beeper.count/12);
-      /**/
-      /*Not as chaos*/
-      beeper.toggle();
-      /**/
-    }else{
-      if(beeper.on)beeper.stop();
+      if(beeper.chaos){
+        if(!beeper.on)beeper.start();
+        beeper.oscillator.frequency.value = 404+(Math.random()-.5)*110*beeper.count;
+        beeper.oscillator.type = beeper.types[beeper.type++%5];
+      }
+      else{
+        beeper.oscillator.frequency.value = 800 * (1+beeper.count/24);
+        beeper.toggle();
+      }
+    }else if(beeper.on){
+      beeper.stop();
     }
     if(beeper.time>60*10){//MERCY
       beeper.time=0;
@@ -215,8 +219,7 @@ timer = {
   start: function(id){
     timersOn[id]=true;
     timers[id]=durations[id]*60*60;
-    $('#a'+id).addClass("on");
-    $("#a"+id).on("click tap", function(){
+    $('#a'+id).addClass("on").on("click tap", function(){
       timer.stop(timer.id(this));
     });
     if(!beeper.started)
@@ -225,8 +228,7 @@ timer = {
   stop: function(id){
     timersOn[id]=false;
     timers[id]=0;
-    $('#a'+id).removeClass("on");
-    $("#a"+id).on("click tap", function(){
+    $('#a'+id).removeClass("on").on("click tap", function(){
       timer.start(timer.id(this));
     });
     colour.set(id);//Unflips
@@ -247,15 +249,14 @@ timer = {
 
 $(document).ready(function(){
   timer.jumpstart();
+  $("p").on("click tap", function(){beeper.chaos = !beeper.chaos;});
   for(i=0;i<24;i++){
     $("#a"+i).on("mousedown touchstart",function(e){
       start = new Date().getTime();
-    });
-    $("#a"+i).on("mouseup touchend",function(){
+    }).on("mouseup touchend",function(){
       if(new Date().getTime() > start + 1000)
         timer.edit(timer.id(this));
-    });
-    $("#a"+i).on("click tap", function(){
+    }).on("click tap", function(){
       timer.start(timer.id(this));
     });
   }
@@ -300,5 +301,6 @@ $(document).ready(function(){
 <td id="a23"><strong id="n23">Ketchup</strong><em id="t23"><b>4</b><i>:</i><u>00</u></em></td>
 </tr>
 </table>
+<p>Tap here for chaos.</p>
 </body>
 </html>
