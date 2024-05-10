@@ -163,25 +163,36 @@ colour = {
 };
 //Timer mixing both appearance and, well, timing checks
 timer = {
+  mercy: function(){
+    for(i=0;i<24;i++)
+      timer.stop(i);
+    beeper.time=0;
+    beeper.stop();
+  },
+  change:function(i){
+    timers[i]=0;
+    timersOn[i]=false;
+    names[i]=sets[i][2];
+    durations[i]=sets[i][0];
+    colours[i]=sets[i][1];
+    $("#n"+i).text(names[i]);
+    colour.set(i);
+    timer.reset(i);
+  },
   jumpstart: function(){
-    for(i=0;i<24;i++){
-      timers[i]=0;
-      timersOn[i]=false;
-      names[i]=sets[i][2];
-      durations[i]=sets[i][0];
-      colours[i]=sets[i][1];
-      $("#n"+i).text(names[i]);
-      colour.set(i);
-      timer.reset(i);
-    }
+    for(i=0;i<24;i++)
+      timer.change(i);
   },
   update: function(){
+    if(beeper.time>60*10)
+      beeper.mercy();
+      
     beeper.count=0;
     for(i=0;i<24;i++){
       if(timersOn[i]){
-        $('#t'+i+" b").text(Math.floor(Math.abs(timers[i]/60/60)));
-        $('#t'+i+" i").toggleClass("hidden");
-        $('#t'+i+" u").text(String(parseInt(Math.abs(timers[i]/60%60))).padStart(2,"0"));
+        $('#t'+i+" b").text(Math.floor(Math.abs(timers[i]/60/60)));//Hour
+        $('#t'+i+" i").toggleClass("hidden");//Blinker separator :
+        $('#t'+i+" u").text(String(parseInt(Math.abs(timers[i]/60%60))).padStart(2,"0"));//Minutes
         timers[i]--;
       }
       if(timers[i]<0){
@@ -189,10 +200,13 @@ timer = {
         beeper.count++;
       }
     }
+    if(!beeper.count && beeper.on)
+      beeper.stop();
     if(beeper.count){
       beeper.time++;
       if(beeper.chaos){
-        if(!beeper.on)beeper.start();
+        if(!beeper.on)
+          beeper.start();
         beeper.oscillator.frequency.value = 404+(Math.random()-.5)*55*beeper.count;
         beeper.oscillator.type = beeper.types[beeper.type++%5];
       }
@@ -200,14 +214,6 @@ timer = {
         beeper.oscillator.frequency.value = 800 * (1+beeper.count/24);
         beeper.toggle();
       }
-    }else if(beeper.on){
-      beeper.stop();
-    }
-    if(beeper.time>60*10){//MERCY
-      beeper.time=0;
-      for(i=0;i<24;i++)
-        timer.stop(i);
-      beeper.stop();
     }
   },
   reset: function(id){
@@ -237,9 +243,12 @@ timer = {
     nam=prompt("New condiment name:",names[id]);
     dur=prompt("New duration in hour:",durations[id]);
     col=prompt("New colour:",colours[id]);
+    if(!nam)nam=names[id];
+    if(!dur)dur=durations[id];
+    if(!col)col=colours[id];
     sets[id]=[dur,col,nam];
     cookies.set("sets",JSON.stringify(sets));
-    timer.jumpstart();
+    timer.change(id);
   },
   id: function(ob){
     return parseInt($(ob).attr("id").slice(1));
@@ -251,7 +260,7 @@ $(document).ready(function(){
   $("p").on("click tap", function(){
     beeper.chaos = !beeper.chaos;
   });
-  $("td").on("mousedown touchstart",function(e){
+  $("td").on("mousedown touchstart",function(){
     start = new Date().getTime();
   }).on("mouseup touchend",function(){
     if(new Date().getTime() > start + 1000)
