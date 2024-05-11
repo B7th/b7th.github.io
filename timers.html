@@ -77,7 +77,7 @@ sets=[
 
 [2,"#ff4","Cheese Curds"],
 [2,"#ca0","Eggs"],
-[1,"#8ff","Back Buckets"],
+[1,"#fcc","Back Buckets"],
 [1,"#88f","Front Buckets"],
 [.001,"#f8f","Test A"],
 [.001,"#fa6","Test B"]
@@ -156,9 +156,9 @@ colour = {
       ?"#fff":"#000"});
   },
   flip: function(i){
-    temp=$("#a"+i).css("background-color");
-    $("#a"+i).css("background-color",$("#a"+i).css("color"));
-    $("#a"+i).css("color",temp);
+    $("#a"+i).css({
+      "background-color":$("#a"+i).css("color"),
+      "color":$("#a"+i).css("background-color")});
   }
 };
 //Timer mixing both appearance and, well, timing checks
@@ -257,9 +257,6 @@ timer = {
 
 $(document).ready(function(){
   timer.jumpstart();
-  $("p").on("click tap", function(){
-    beeper.chaos = !beeper.chaos;
-  });
   $("td").on("mousedown touchstart",function(){
     start = new Date().getTime();
   }).on("mouseup touchend",function(){
@@ -268,9 +265,7 @@ $(document).ready(function(){
   }).on("click tap", function(){
     timer.start(timer.id(this));
   });
-  var intervalId = window.setInterval(function(){
-    timer.update();
-  }, 1000);
+  var intervalId = window.setInterval(timer.update, 1000);
 });
 </script>
 </head>
@@ -309,6 +304,5 @@ $(document).ready(function(){
 <td id="a23"><strong id="n23">Ketchup</strong><em id="t23"><b>4</b><i>:</i><u>00</u></em></td>
 </tr>
 </table>
-<p>Tap here for chaos.</p>
 </body>
 </html>
